@@ -1,0 +1,32 @@
+version: "3"
+services:
+
+#installer mongodb et associer la porte 27017, 3000, 4200 à localhost 27017,3000,5555 
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+      - 3000:3000
+      - 5555:4200
+
+    
+# créer image node serveur et built le container en la meme net work que mongo db
+  node-server:
+    build: 
+      context: ./NodeJS
+      dockerfile: Dockerfile
+    network_mode: "service:mongodb"
+    depends_on:
+      - mongodb
+
+# créer image angular app et built le container en la meme net work que mongo db
+  angularapp:
+    build: 
+      context: ./AngularApp
+      dockerfile: Dockerfile
+
+    network_mode: "service:mongodb"
+    depends_on: 
+      - node-server
+
+
